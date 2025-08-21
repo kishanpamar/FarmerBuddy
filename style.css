@@ -1,0 +1,360 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+.at{
+  color: white;
+  text-decoration: none;
+}
+.at:hover{
+  text-decoration: none;
+  color: white;
+}
+#overflow{
+  overflow-y: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #353b48;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+ 
+  /* ................. Main Page .................  */
+  
+#main{
+  background: #11998e; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #11998e, #38ef7d); 
+  background: linear-gradient(to right, #11998e, #38ef7d); 
+  width: 100%;
+  height: 100vh;
+  /* display: grid;
+  place-items: center; */
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  
+}
+#tractor1 img{
+  animation-name: move1 ;
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+}
+
+
+@keyframes move1{
+  0%   { left:0%; bottom: 0%; }
+  
+  100% { left:100%; bottom: 0%;}
+}
+
+#tractor1 img{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.info h2{
+  padding: 10px 0px;
+  font-size: 65px;
+}
+.main_btn{
+   letter-spacing: 2px;
+}
+
+@media screen and (max-width: 750px){
+  .info h2{
+    padding: 10px 0px;
+    font-size: 45px;
+  }
+  .info h3{
+    font-size: 25px;
+  }
+  .main_btn{
+    letter-spacing: 1px;
+  }
+}
+
+@media screen and (max-width: 500px){
+  .info h2{
+    padding: 10px 0px;
+    font-size: 25px;
+  }
+  .info h3{
+    font-size: 15px;
+  }
+  .main_btn{
+    width: 120px;
+    padding-left: 0px;
+    margin-left:15px;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+ 
+}
+
+
+/* .................About Us........................ */
+#about{
+  background-color: #ced6e0;
+}
+h1{
+  width: 95%;
+  text-shadow: 2px 2px 2px #bdc3c7;
+  font-size: 50px;
+  margin: 20px auto;
+  text-align: center;
+  border-radius: 5px;
+  padding: 10px 0px;
+  letter-spacing: 3px;
+}
+.row{
+  /* background: #2f3640; */
+  width: 95%;
+  /* color: white; */
+  margin: 20px auto;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 5px;
+}
+.col{
+  margin: 20px 0px;
+  flex-basis: 50%;
+}
+.col img{
+  width: 90%;
+  height: 90%;
+  margin: 10px 10px;
+  cursor: pointer;
+  /* border: 3px solid black; */
+  box-shadow: 4px 4px 8px rgb(56, 53, 53);
+}
+.col h2{
+  font-size: 40px;
+  padding: 10px 0px;
+}
+.col p{
+  font-size: 20px;
+  letter-spacing: 2px;
+  word-spacing: 3px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+
+@media screen and (max-width: 900px){
+  .row{
+      width: 95%;
+      margin: 0px 40px;
+  }
+  .col{
+      flex-basis: 100%;
+  }
+}
+@media screen and (max-width: 500px){
+  h1{
+    width: 95%;
+    text-shadow: 2px 2px 2px #bdc3c7;
+    font-size: 30px;
+    margin: 20px auto;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px 0px;
+    letter-spacing: 3px;
+  }
+  .row{
+      width: 85%;
+      margin: 0px 30px;
+  }
+  .col{
+      flex-basis: 100%;
+      overflow-y: hidden;
+  }
+  .col h2{
+    font-size: 25px;
+    padding: 10px 0px;
+  }
+  .col p{
+    font-size: 15px;
+    letter-spacing: 1px;
+    word-spacing: 3px;
+    font-style: italic;
+    font-weight: 500;
+  }
+}
+
+/* ...............Team Members .................. */
+#team{
+  background-color: #ced6e0;
+}
+.team_heading{
+  width: 80%;
+  /* background-color: #2C3A47;
+  color: white; */
+  margin: 20px auto;
+  text-align: center;
+  border-radius: 5px;
+  letter-spacing: 3px;
+  word-spacing: 5px;
+  padding: 10px;
+}
+.rows{
+  background: #fff200;
+  width: 80%;
+  margin: 4% auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border-radius: 5px;
+}
+.cols{
+  flex-basis: 25%;
+  text-align: center;
+  overflow: hidden;
+}
+.cols img{
+  width: 100%;
+  cursor: pointer;
+}
+.cols a{
+  text-decoration: none;
+  color: black;
+}
+.cols p{
+  margin: 20px 0px;
+}
+.team_links .fa{
+  width: 25px;
+  height: 25px;
+  border: 1px solid black;
+  line-height: 25px;
+  transition: transform .5s;
+}
+.team_links .fa:hover{
+  background: black;
+  color: white;
+  transform: scale(1.15);
+  /* transform: translatex(-5px); */
+}
+.cols:hover img{
+  transform: scale(1.1);
+
+}
+
+@media screen and (max-width: 720px){
+  .rows{
+      width: 95%
+  }
+  .cols{
+      flex-basis: 50%;
+  }
+  
+  .team_heading{
+    width: 95%;
+    /* background-color: #2C3A47;
+    color: white; */
+    margin: 20px auto;
+    text-align: center;
+    border-radius: 5px;
+    letter-spacing: 3px;
+    word-spacing: 5px;
+    padding: 10px;
+  }
+  .rows .cols:nth-child(1){
+      order: 1;  
+  }
+  
+  .rows .cols:nth-child(2){
+      order: 2;  
+  }
+
+  .rows .cols:nth-child(3){
+      order: 4;  
+  }
+
+  .rows .cols:nth-child(4){
+      order: 3;  
+  }
+  .rows .cols:nth-child(5){
+      order: 6;  
+  }
+
+  .rows .cols:nth-child(6){
+      order: 5;  
+  }
+
+  .rows .cols:nth-child(7){
+      order: 7;  
+  }
+
+  .rows .cols:nth-child(8){
+      order: 8;  
+  }
+}
+
+/* .............ConTACT.................... */
+#contact{
+    background-color: #ffffff;
+}
+.section-head{
+    width: 100%;
+    text-align: center;
+    padding: 20px 0px;
+    margin: 10px 0px;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+input, textarea{
+    width: 80%;
+    margin: 11px 0px;
+    padding: 7px;
+    font-size: 20px;
+    border: 1px solid black;
+    border-radius: 5px;;
+    outline: none;
+}
+input:hover, textarea:hover{
+  border: 2px solid black;
+}
+#submitBtn{
+    width: 80%;
+    padding: 10px;
+    font-size: 25px;
+    letter-spacing: 3px;
+}
+
+/* .............FOOTER>............... */
+.footer{
+    width: 100vw;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}

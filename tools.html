@@ -1,0 +1,458 @@
+<!-- Save as tools.html -->
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FarmBuddy — Farmer Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* small helpers */
+    .big { font-size: 1.1rem; }
+    .icon-btn { font-size: 1.25rem; padding: .85rem 1rem; }
+    .card { background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 6px 20px rgba(2,6,23,0.06); }
+    .lang-small { font-size: .85rem; }
+  </style>
+</head>
+<body class="bg-green-50 min-h-screen text-gray-800">
+  <main class="max-w-4xl mx-auto p-4">
+    <!-- Header -->
+    <header class="flex items-center justify-between gap-4 mb-4">
+      <div>
+        <h1 class="text-2xl font-bold">FarmBuddy — Farmer Tools</h1>
+        <p class="text-sm text-gray-700">Simple voice-first assistant for farmers</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="lang-small">Language</label>
+        <select id="langSel" class="border rounded px-2 py-1">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="gu">ગુજરાતી</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Voice help -->
+    <section id="voiceHelp" class="card mb-4 flex items-center gap-3">
+      <button id="readPage" class="icon-btn rounded-full bg-green-600 text-white">🔊</button>
+      <div>
+        <div id="voiceTitle" class="font-semibold big">Voice Guide</div>
+        <div id="voiceText" class="text-sm text-gray-600">Press the speaker to hear the page instructions.</div>
+      </div>
+      <div class="ml-auto flex gap-2">
+        <button id="startListen" class="px-3 py-1 bg-blue-600 text-white rounded">🎤 Ask</button>
+        <button id="stopListen" class="px-3 py-1 border rounded">⏹ Stop</button>
+      </div>
+    </section>
+
+    <!-- Fertilizer Recommender -->
+    <section class="card mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold big">Fertilizer & Crop Suggestion</h2>
+        <button id="ttsSuggest" class="px-3 py-1 border rounded text-sm">🔊 Speak</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+        <label>
+          <div class="text-sm">Crop</div>
+          <select id="crop" class="w-full border rounded px-2 py-2">
+            <option value="maize">Maize / મકાઇ / मकई</option>
+            <option value="rice">Rice / ધાન / धान</option>
+            <option value="wheat">Wheat / ગહૂં / गेहूं</option>
+            <option value="tomato">Tomato / ટમેટા / टमाटर</option>
+            <option value="onion">Onion / ડુંગળી / प्याज</option>
+          </select>
+        </label>
+        <label>
+          <div class="text-sm">Soil pH</div>
+          <input id="ph" step="0.1" type="number" class="w-full border rounded px-2 py-2" placeholder="e.g. 6.5" />
+        </label>
+        <label>
+          <div class="text-sm">Soil Type</div>
+          <select id="soilType" class="w-full border rounded px-2 py-2">
+            <option value="loam">Loam</option>
+            <option value="clay">Clay</option>
+            <option value="sandy">Sandy</option>
+            <option value="black">Black (Regur)</option>
+          </select>
+        </label>
+        <label>
+          <div class="text-sm">Land area (in acres)</div>
+          <input id="area" type="number" step="0.01" class="w-full border rounded px-2 py-2" placeholder="e.g. 0.5" />
+        </label>
+      </div>
+
+      <div class="flex gap-2 mt-2">
+        <button id="getRec" class="bg-emerald-600 text-white px-4 py-2 rounded big">Get Recommendation</button>
+        <button id="resetRec" class="border px-4 py-2 rounded big">Reset</button>
+        <button id="saveRec" class="border px-4 py-2 rounded big">Save</button>
+      </div>
+
+      <div id="recResult" class="mt-3 p-3 bg-gray-50 rounded hidden" role="status" aria-live="polite"></div>
+    </section>
+
+    <!-- Weather + Irrigation -->
+    <section class="card mb-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold big">Weather & Irrigation Planner</h2>
+        <small class="text-xs text-gray-600">API-ready (OpenWeather)</small>
+      </div>
+
+      <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <input id="city" class="border rounded px-2 py-2" placeholder="Your city / district" />
+        <select id="period" class="border rounded px-2 py-2">
+          <option value="3">3 days</option>
+          <option value="7" selected>7 days</option>
+        </select>
+        <button id="getWeather" class="bg-blue-600 text-white px-3 py-2 rounded">Get Forecast</button>
+      </div>
+
+      <div id="weatherResult" class="mt-3 p-3 bg-gray-50 rounded hidden"></div>
+
+      <p class="text-xs text-gray-600 mt-2">Note: replace the placeholder fetch with your server endpoint that proxies OpenWeather (to keep API key secret).</p>
+    </section>
+
+    <!-- Market prices -->
+    <section class="card mb-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold big">Trending Crops & Market Prices</h2>
+        <small class="text-xs text-gray-600">Demo data (Agmarknet / data.gov.in recommended)</small>
+      </div>
+
+      <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <select id="commodity" class="border rounded px-2 py-2">
+          <option value="tomato">Tomato</option>
+          <option value="onion">Onion</option>
+          <option value="potato">Potato</option>
+          <option value="wheat">Wheat</option>
+          <option value="rice">Rice</option>
+        </select>
+        <input id="mandi" class="border rounded px-2 py-2" placeholder="Nearest mandi (district/market)" />
+        <button id="getPrice" class="bg-yellow-600 text-white px-3 py-2 rounded">Get Price</button>
+      </div>
+
+      <div id="priceResult" class="mt-3 p-3 bg-gray-50 rounded hidden"></div>
+
+      <p class="text-xs text-gray-600 mt-2">Integration note: build server endpoint /api/market to call Agmarknet/data.gov.in and return simple JSON to this page.</p>
+    </section>
+
+    <!-- Schemes & Training -->
+    <section class="card mb-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold big">Government Schemes & Trainings</h2>
+        <small class="text-xs text-gray-600">KVK, PM-KISAN, Soil Health</small>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+        <div>
+          <h3 class="font-medium">Schemes & Loans</h3>
+          <ul class="list-disc pl-5 mt-2 text-sm">
+            <li><a class="text-blue-600" href="https://pmkisan.gov.in" target="_blank">PM-KISAN</a></li>
+            <li><a class="text-blue-600" href="https://www.nabard.org" target="_blank">NABARD / Agricultural loans</a></li>
+            <li><a class="text-blue-600" href="https://www.loans.gov.in" target="_blank">State Farmer Schemes (search by state)</a></li>
+          </ul>
+          <div class="mt-2 text-sm">Helpline: <a href="tel:1800111111" class="text-blue-600">1800-11-1111</a></div>
+        </div>
+
+        <div>
+          <h3 class="font-medium">Training & Organic Courses</h3>
+          <ul class="list-disc pl-5 mt-2 text-sm">
+            <li><a class="text-blue-600" href="https://kvk.icar.gov.in" target="_blank">Find KVK near you</a></li>
+            <li><a class="text-blue-600" href="https://soilhealth.dac.gov.in" target="_blank">Soil Health Portal</a></li>
+            <li><a class="text-blue-600" href="https://www.ignou.ac.in" target="_blank">IGNOU: Organic farming courses</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Training videos -->
+    <section class="card mb-4">
+      <h2 class="font-semibold big mb-2">Organic Farming Videos (Easy)</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <iframe width="100%" height="200" src="https://youtu.be/2qiNKen-rm0?si=qbUkTf3CtlNB50Qu" title="Organic farming basic" frameborder="0" allowfullscreen></iframe>
+        <iframe width="100%" height="200" src="https://youtu.be/k6zS02I8kWQ?si=Pb-L5H04sGOVznez" title="Vermicompost" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- Community Q&A -->
+    <section class="card mb-6">
+      <h2 class="font-semibold big mb-2">Farmers Community (Local)</h2>
+      <div class="mb-2">
+        <textarea id="question" class="w-full border rounded p-2" rows="2" placeholder="Ask your question (or press 🎤 and speak)"></textarea>
+      </div>
+      <div class="flex gap-2">
+        <button id="postQ" class="bg-indigo-600 text-white px-4 py-2 rounded">Post</button>
+        <button id="clearQ" class="border px-4 py-2 rounded">Clear</button>
+      </div>
+
+      <div id="qaList" class="mt-3 space-y-2"></div>
+    </section>
+
+    <footer class="text-xs text-gray-600 mb-6">
+      <div>Designed for easy use: large buttons, voice readout, bilingual text.</div>
+      <div class="mt-1">Developer notes: This page is API-ready. Add server endpoints for market/weather to avoid exposing API keys.</div>
+    </footer>
+  </main>
+
+  <script>
+    /* ========== TRANSLATIONS ========== */
+    const TEXT = {
+      en: {
+        voiceGuide: "Press the speaker to hear instructions in English.",
+        pageSummary: "This page helps farmers with fertilizer advice, weather, market prices and trainings.",
+        saved: "Saved locally.",
+        recommendTitle: "Recommendations for your field",
+        generalNote: "General suggestions — for precise steps please get a soil lab test."
+      },
+      hi: {
+        voiceGuide: "निर्देश सुनने के लिए स्पीकर दबाएँ।",
+        pageSummary: "यह पेज उर्वरक सलाह, मौसम, मंडी भाव और प्रशिक्षण में मदद करता है।",
+        saved: "स्थानीय रूप से सहेजा गया।",
+        recommendTitle: "आपके खेत के लिए सुझाव",
+        generalNote: "सामान्य सुझाव — विशिष्ट कदम के लिए मृदा लैब टेस्ट कराएँ।"
+      },
+      gu: {
+        voiceGuide: "સૂચનાઓ સાંભળવા માટે સ્પીકર દબાવો.",
+        pageSummary: "આ પેજ ખેડૂતોને ખાતરની સલાહ, હવામાન, માર્કેટ ભાવ અને તાલીમમાં મદદ કરે છે.",
+        saved: "સ્થાનિક રીતે સાચવાયું.",
+        recommendTitle: "તમારા для‍માટીના સૂચનો",
+        generalNote: "સામાન્ય સૂચનો — ચોક્કસ માટે માટીનું લેબ ટેસ્ટ કરાવો."
+      }
+    };
+
+    // elements
+    const langSel = document.getElementById('langSel');
+    const voiceText = document.getElementById('voiceText');
+    const readPage = document.getElementById('readPage');
+    const startListen = document.getElementById('startListen');
+    const stopListen = document.getElementById('stopListen');
+
+    function updateLangUI() {
+      const l = langSel.value;
+      voiceText.innerText = TEXT[l].voiceGuide;
+    }
+    langSel.addEventListener('change', updateLangUI);
+    updateLangUI();
+
+    /* ========== Text-to-Speech ========== */
+    function speak(text, lang='en') {
+      if (!('speechSynthesis' in window)) return alert('Speech not supported');
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = (lang === 'gu') ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-IN');
+        window.speechSynthesis.speak(u);
+      } catch (e) { console.error(e); }
+    }
+
+    readPage.addEventListener('click', () => {
+      const l = langSel.value;
+      speak(TEXT[l].pageSummary, l);
+    });
+
+    /* ========== Speech-to-Text (Web Speech API) ========== */
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new Rec();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        // put text into question box
+        document.getElementById('question').value = text;
+        // also try to parse simple commands, like "recommend" or "get price"
+        if (/recommend|fertilizer|khad|સલાહ|सलाह/i.test(text)) {
+          document.getElementById('getRec').click();
+        }
+      };
+      recognition.onerror = (err) => { console.warn('Speech error', err); };
+    } else {
+      startListen.disabled = true;
+      stopListen.disabled = true;
+    }
+
+    startListen.addEventListener('click', () => {
+      if (!recognition) { alert('Speech recognition not supported'); return; }
+      recognition.start();
+    });
+    stopListen.addEventListener('click', () => {
+      if (!recognition) return;
+      recognition.stop();
+    });
+
+    /* ========== Fertilizer recommender (simple working logic) ========== */
+    function fertilizerLogic(crop, ph, soilType, area) {
+      // area in acres; recommend approx quantities in kg per acre (organic approach)
+      const rec = [];
+      const a = Number(area) || 1;
+
+      // pH
+      if (isNaN(ph)) rec.push({title: 'pH', text: 'Provide pH for exact advice.'});
+      else if (ph < 5.5) rec.push({title:'pH', text:'Soil acidic — apply organic lime (dose 0.5 - 1 tonne/acre as required).'});
+      else if (ph <= 7.5) rec.push({title:'pH', text:'pH OK for most crops.'});
+      else rec.push({title:'pH', text:'Soil alkaline — consider acidifying organic materials (coffee grounds mixed).'});
+      
+      // crop-specific base guidance
+      if (crop === 'maize') {
+        rec.push({title:'Crop', text:`Maize: Apply vermicompost ${Math.round(500*a)} kg/acre before sowing; neem cake ${Math.round(50*a)} kg as supplement.`});
+      } else if (crop === 'rice') {
+        rec.push({title:'Crop', text:`Rice: Apply well-rotted FYM ${Math.round(1000*a)} kg/acre; compost ${Math.round(500*a)} kg.`});
+      } else if (crop === 'wheat') {
+        rec.push({title:'Crop', text:`Wheat: Apply compost ${Math.round(500*a)} kg/acre and green manure if possible.`});
+      } else if (crop === 'tomato') {
+        rec.push({title:'Crop', text:`Tomato: Apply vermicompost ${Math.round(300*a)} kg/acre; neem cake ${Math.round(30*a)} kg.`});
+      } else if (crop === 'onion') {
+        rec.push({title:'Crop', text:`Onion: Apply well-rotted FYM ${Math.round(600*a)} kg/acre; add potash via compost or ash if needed.`});
+      } else {
+        rec.push({title:'Crop', text:`General organic: vermicompost ${Math.round(300*a)} kg/acre; well-rotted FYM ${Math.round(500*a)} kg/acre.`});
+      }
+
+      // soil type tweak
+      if (soilType === 'sandy') rec.push({title:'Soil tip', text:'Sandy soils: increase organic matter and mulching to retain moisture.'});
+      if (soilType === 'clay') rec.push({title:'Soil tip', text:'Clay soils: use raised beds and heavy compost to improve structure.'});
+
+      return rec;
+    }
+
+    // UI events for recommender
+    document.getElementById('getRec').addEventListener('click', () => {
+      const crop = document.getElementById('crop').value;
+      const ph = Number(document.getElementById('ph').value);
+      const soil = document.getElementById('soilType').value;
+      const area = Number(document.getElementById('area').value) || 1;
+      const l = langSel.value;
+
+      const recs = fertilizerLogic(crop, ph, soil, area);
+      const box = document.getElementById('recResult');
+      let html = `<div class="font-semibold mb-2">${TEXT[l].recommendTitle}</div><ul class="list-disc pl-5">`;
+      recs.forEach(r => html += `<li class="mb-1"><strong>${r.title}:</strong> ${r.text}</li>`);
+      html += `</ul><div class="text-xs text-gray-600 mt-2">${TEXT[l].generalNote}</div>`;
+      box.innerHTML = html;
+      box.classList.remove('hidden');
+
+      // speak short summary
+      const speakText = recs.slice(0,3).map(r => r.text).join('. ');
+      speak(speakText, l);
+    });
+
+    document.getElementById('resetRec').addEventListener('click', () => {
+      ['ph','area'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('recResult').classList.add('hidden');
+    });
+
+    document.getElementById('saveRec').addEventListener('click', () => {
+      const sample = {
+        crop: document.getElementById('crop').value,
+        ph: document.getElementById('ph').value,
+        soilType: document.getElementById('soilType').value,
+        area: document.getElementById('area').value,
+        date: new Date().toISOString()
+      };
+      const arr = JSON.parse(localStorage.getItem('samples') || '[]');
+      arr.unshift(sample);
+      localStorage.setItem('samples', JSON.stringify(arr.slice(0,20)));
+      alert(TEXT[langSel.value].saved);
+    });
+
+    document.getElementById('ttsSuggest').addEventListener('click', () => {
+      const box = document.getElementById('recResult');
+      if (box.classList.contains('hidden')) {
+        const msg = (langSel.value === 'gu') ? 'પ્રથમ માટીના મૂલ્યો દાખલ કરો.' : (langSel.value === 'hi' ? 'पहले मिट्टी के मान दर्ज करें।' : 'Please enter soil values first.');
+        speak(msg, langSel.value);
+      } else {
+        speak(box.innerText, langSel.value);
+      }
+    });
+
+    /* ========== Weather (demo + integration notes) ========== */
+    document.getElementById('getWeather').addEventListener('click', async () => {
+      const city = document.getElementById('city').value || 'your area';
+      const days = Number(document.getElementById('period').value);
+      const box = document.getElementById('weatherResult');
+      box.classList.remove('hidden');
+      box.innerHTML = '<div>Loading forecast (demo)...</div>';
+
+      // Demo response so page works offline:
+      const demo = {
+        place: city,
+        forecast: Array.from({length: days}).map((_,i) => ({
+          day: `Day ${i+1}`,
+          temp: (25 + i) + '°C',
+          rainRisk: (i%3===0) ? 'Low' : 'Moderate',
+          advice: (i%3===0) ? 'No irrigation needed' : 'Irrigate if soil is dry'
+        }))
+      };
+
+      // Show demo
+      let html = `<div class="font-semibold">Forecast for ${demo.place}</div>`;
+      demo.forecast.forEach(f => {
+        html += `<div class="mt-2"><strong>${f.day}:</strong> ${f.temp} — Risk: ${f.rainRisk} — ${f.advice}</div>`;
+      });
+      box.innerHTML = html;
+
+      /* Integration instructions (do on server):
+         - Create endpoint /api/weather?city=NAME that:
+           fetches OpenWeather 7-day forecast (OneCall) on server using your API key,
+           returns JSON with daily temps & precipitation chance.
+         - Then replace demo above with fetching /api/weather?city=...
+      */
+    });
+
+    /* ========== Market price demo (and integration) ========== */
+    document.getElementById('getPrice').addEventListener('click', async () => {
+      const commodity = document.getElementById('commodity').value;
+      const mandi = document.getElementById('mandi').value || 'nearest mandi';
+      const box = document.getElementById('priceResult');
+      box.classList.remove('hidden');
+      box.innerHTML = '<div>Loading market price (demo)...</div>';
+
+      // demo
+      const mock = {commodity, mandi, modal: Math.round(1200 + Math.random()*800), min: 1000, max: 2000, date: 'demo' };
+      box.innerHTML = `<div class="font-semibold">Price at ${mock.mandi}</div>
+                       <div>Commodity: ${mock.commodity}</div>
+                       <div>Modal: ${mock.modal} ₹/quintal</div>
+                       <div>Min: ${mock.min} | Max: ${mock.max}</div>
+                       <div class="text-xs text-gray-600">Date: ${mock.date}</div>`;
+
+      /* Integration notes:
+         - Implement server endpoint /api/market?commodity=...&mandi=...
+         - Server calls Agmarknet or data.gov.in daily price API, caches results, and returns small JSON with modal,min,max,date.
+         - Call /api/market from here and render results.
+      */
+    });
+
+    /* ========== Community Q&A (localStorage) ========== */
+    const qaList = document.getElementById('qaList');
+    function renderQA() {
+      const arr = JSON.parse(localStorage.getItem('qa') || '[]');
+      qaList.innerHTML = arr.map(item => {
+        return `<div class="p-2 bg-white rounded"><div class="font-medium">${escapeHtml(item.q)}</div>
+                <div class="text-xs text-gray-600 mt-1">${item.date}</div>
+                <div class="mt-2 text-sm">${escapeHtml(item.a || 'Waiting for replies...')}</div></div>`;
+      }).join('');
+    }
+    function escapeHtml(s) { return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    document.getElementById('postQ').addEventListener('click', () => {
+      const q = document.getElementById('question').value.trim();
+      if (!q) return alert('Please write a question.');
+      const arr = JSON.parse(localStorage.getItem('qa') || '[]');
+      arr.unshift({q, a: '', date: new Date().toLocaleString() });
+      localStorage.setItem('qa', JSON.stringify(arr.slice(0,50)));
+      document.getElementById('question').value = '';
+      renderQA();
+    });
+    document.getElementById('clearQ').addEventListener('click', () => {
+      document.getElementById('question').value = '';
+    });
+    renderQA();
+
+    // small helpers: stop speech when page hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && window.speechSynthesis) window.speechSynthesis.cancel();
+    });
+  </script>
+</body>
+</html>
