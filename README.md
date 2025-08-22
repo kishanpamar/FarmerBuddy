@@ -8,4 +8,4 @@ Farmer Buddy website is developed for `farmers` or `agricultural` enthusiast peo
 - Frontend - HTML, CSS, JavaScript, BootStrap
 - Backend - PHP, MYSQL
 
-You can view live website on [FarmBuddy](https://farmbuddy.epizy.com/HTML/)
+You can view live website on [FarmBuddy]()
